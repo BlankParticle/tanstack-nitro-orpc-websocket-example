@@ -3,21 +3,23 @@ import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/websocket";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { createIsomorphicFn } from "@tanstack/react-start";
+import { createIsomorphicFn, getGlobalStartContext } from "@tanstack/react-start";
 import type { RouterClient } from "@orpc/server";
 import router from "#/orpc/router";
-import { createContext } from "#/lib/context.ts";
 
 const getORPCClient = createIsomorphicFn()
-  .server(() =>
-    createRouterClient(router, {
-      // Tanstack doesn't currently provide any helper function to access the request context
-      // thus this, I will make an issue about this to make this easier
-      context: () => ({
-        headers: getRequestHeaders(),
-        ...createContext(),
+  .server(
+    (): RouterClient<typeof router> =>
+      createRouterClient(router, {
+        context: () => {
+          const context = getGlobalStartContext();
+          if (!context) throw new Error("No context found for the request");
+          return {
+            headers: getRequestHeaders(),
+            ...context,
+          };
+        },
       }),
-    }),
   )
   .client((): RouterClient<typeof router> => {
     // TODO: Use partysocket's reconnecting websocket client to auto reconnect
@@ -28,6 +30,6 @@ const getORPCClient = createIsomorphicFn()
     return createORPCClient(link);
   });
 
-export const client: RouterClient<typeof router> = getORPCClient();
+export const client = getORPCClient();
 
 export const orpc = createTanstackQueryUtils(client);

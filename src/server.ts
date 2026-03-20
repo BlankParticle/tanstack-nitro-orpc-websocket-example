@@ -1,5 +1,5 @@
 import handler from "@tanstack/react-start/server-entry";
-import { createContext, type RequestContext } from "./lib/context";
+import { type RequestContext } from "./lib/context";
 
 declare module "@tanstack/react-start" {
   interface Register {
@@ -12,7 +12,9 @@ declare module "@tanstack/react-start" {
 export default {
   fetch(request: Request) {
     return handler.fetch(request, {
-      context: createContext(),
+      context: {
+        server: "node-nitro",
+      },
     });
   },
 };
