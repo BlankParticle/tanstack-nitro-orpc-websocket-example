@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { orpc } from "#/orpc/client";
@@ -13,6 +13,9 @@ export const Route = createFileRoute("/")({
 function App() {
   return (
     <main className="page-wrap px-4 pb-8 pt-14">
+      <Link to="/terminal" className="inline-block mb-4 text-sm text-blue-600 hover:text-blue-800 underline">
+        Terminal
+      </Link>
       <h1 className="text-2xl font-bold mb-6">oRPC Todo Demo</h1>
       <TodoList />
     </main>

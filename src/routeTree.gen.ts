@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TerminalRouteImport } from './routes/terminal'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPtyRouteImport } from './routes/api.pty'
 import { Route as ApiOrpcRouteImport } from './routes/api.orpc'
 
+const TerminalRoute = TerminalRouteImport.update({
+  id: '/terminal',
+  path: '/terminal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPtyRoute = ApiPtyRouteImport.update({
+  id: '/api/pty',
+  path: '/api/pty',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOrpcRoute = ApiOrpcRouteImport.update({
@@ -25,37 +37,59 @@ const ApiOrpcRoute = ApiOrpcRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/terminal': typeof TerminalRoute
   '/api/orpc': typeof ApiOrpcRoute
+  '/api/pty': typeof ApiPtyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/terminal': typeof TerminalRoute
   '/api/orpc': typeof ApiOrpcRoute
+  '/api/pty': typeof ApiPtyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/terminal': typeof TerminalRoute
   '/api/orpc': typeof ApiOrpcRoute
+  '/api/pty': typeof ApiPtyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/orpc'
+  fullPaths: '/' | '/terminal' | '/api/orpc' | '/api/pty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/orpc'
-  id: '__root__' | '/' | '/api/orpc'
+  to: '/' | '/terminal' | '/api/orpc' | '/api/pty'
+  id: '__root__' | '/' | '/terminal' | '/api/orpc' | '/api/pty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TerminalRoute: typeof TerminalRoute
   ApiOrpcRoute: typeof ApiOrpcRoute
+  ApiPtyRoute: typeof ApiPtyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terminal': {
+      id: '/terminal'
+      path: '/terminal'
+      fullPath: '/terminal'
+      preLoaderRoute: typeof TerminalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/pty': {
+      id: '/api/pty'
+      path: '/api/pty'
+      fullPath: '/api/pty'
+      preLoaderRoute: typeof ApiPtyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/orpc': {
@@ -70,7 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TerminalRoute: TerminalRoute,
   ApiOrpcRoute: ApiOrpcRoute,
+  ApiPtyRoute: ApiPtyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
